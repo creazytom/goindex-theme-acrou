@@ -36,11 +36,7 @@
             </div>
           </div>
           <div class="columns is-mobile is-multiline has-text-centered">
-            <div
-              class="column"
-              v-for="(item, index) in players"
-              v-bind:key="index"
-            >
+            <div class="column" v-for="(item, index) in players" v-bind:key="index">
               <p class="heading">
                 <a :href="item.scheme">
                   <figure class="image is-48x48" style="margin: 0 auto;">
@@ -63,16 +59,17 @@ export default {
   data: function() {
     return {
       apiurl: "",
-      videourl: "",
+      videourl: ""
     };
   },
   methods: {
     render() {
       // 便于开发环境调试
       this.videourl = window.location.origin + encodeURI(this.url);
+      console.log(this.videourl);
       this.apiurl =
         "https://api.jsonpop.cn/demo/blplyaer/?url=" + this.videourl;
-    },
+    }
   },
   activated() {
     this.render();
@@ -89,32 +86,32 @@ export default {
         {
           name: "IINA",
           icon: "https://www.iina.io/images/iina-icon-60.png",
-          scheme: "iina://weblink?url=" + this.videourl,
+          scheme: "iina://weblink?url=" + this.videourl
         },
         {
           name: "PotPlayer",
           icon: "https://cloud.jsonpop.cn/go2index/player/potplayer.png",
-          scheme: "potplayer://" + this.videourl,
+          scheme: "potplayer://" + this.videourl
         },
         {
           name: "VLC",
           icon: "https://cloud.jsonpop.cn/go2index/player/vlc.png",
-          scheme: "vlc://" + this.videourl,
+          scheme: "vlc://" + this.videourl
         },
         {
           name: "Thunder",
           icon: "https://cloud.jsonpop.cn/go2index/player/thunder.png",
-          scheme: "thunder://" + this.getThunder,
+          scheme: "thunder://" + this.getThunder
         },
         {
           name: "Aria2",
           icon: "https://cloud.jsonpop.cn/go2index/player/aria2.png",
-          scheme: 'javascript:alert("暂未实现")',
+          scheme: 'javascript:alert("暂未实现")'
         },
         {
           name: "nPlayer",
           icon: "https://cloud.jsonpop.cn/go2index/player/nplayer.png",
-          scheme: "nplayer-" + this.videourl,
+          scheme: "nplayer-" + this.videourl
         },
         {
           name: "MXPlayer(Free)",
@@ -124,7 +121,7 @@ export default {
             this.videourl +
             "#Intent;package=com.mxtech.videoplayer.ad;S.title=" +
             this.title +
-            ";end",
+            ";end"
         },
         {
           name: "MXPlayer(Pro)",
@@ -134,13 +131,13 @@ export default {
             this.videourl +
             "#Intent;package=com.mxtech.videoplayer.pro;S.title=" +
             this.title +
-            ";end",
-        },
+            ";end"
+        }
       ];
     },
     getThunder() {
       return Buffer.from("AA" + this.videourl + "ZZ").toString("base64");
-    },
-  },
+    }
+  }
 };
 </script>

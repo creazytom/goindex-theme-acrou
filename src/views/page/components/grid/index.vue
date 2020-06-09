@@ -48,6 +48,11 @@
               {{ file.name }}
             </div>
           </div>
+          <div class="media g2-grid-view-file" style="margin: 0 auto;">
+            <div class="content">
+              <a :href="'iina://weblink?url='+window.location.origin+file.path">{{file.path}}</a>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -60,30 +65,30 @@ export default {
   props: {
     data: {
       type: Array,
-      default: () => [],
+      default: () => []
     },
     getIcon: {
-      type: Function,
+      type: Function
     },
     go: {
-      type: Function,
+      type: Function
     },
     thum: {
-      type: Function,
-    },
+      type: Function
+    }
   },
-  data: function () {
+  data: function() {
     return {};
   },
   computed: {
-    folders () {
-      return this.data.filter((item) => item.isFolder);
+    folders() {
+      return this.data.filter(item => item.isFolder);
     },
-    files () {
-      return this.data.filter((item) => !item.isFolder);
-    },
+    files() {
+      return this.data.filter(item => !item.isFolder);
+    }
   },
-  methods: {},
+  methods: {}
 };
 </script>
 <style lang="scss" scoped>

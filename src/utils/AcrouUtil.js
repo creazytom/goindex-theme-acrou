@@ -1,23 +1,12 @@
 import axios from "@utils/axios";
 let Base64 = require("js-base64").Base64;
 
-const text_exts = [
-  "html",
-  "php",
-  "css",
-  "go",
-  "java",
-  "js",
-  "json",
-  "txt",
-  "sh",
-  "md",
-];
+const text_exts = ["html", "php", "css", "go", "java", "js", "json", "txt", "sh", "md"];
 const video_exts = ["mp4", "webm", "mkv", "m3u8"];
 const image_exts = ["bmp", "jpg", "jpeg", "png", "gif"];
 const pdf_exts = ["pdf"];
 
-export const encodePath = (path) => {
+export const encodePath = path => {
   return path.replace(/(.*)/, (p1, p2) => {
     return p2
       .replace()
@@ -37,7 +26,7 @@ export const checkoutPath = (path, file) => {
   return path;
 };
 
-export const checkView = (path) => {
+export const checkView = path => {
   let name = path.split("/").pop();
   let ext = name
     .split(".")
@@ -70,21 +59,21 @@ export const checkView = (path) => {
   return path;
 };
 
-export const checkExtends = (path) => {
+export const checkExtends = path => {
   let name = path.split("/").pop();
   let ext = name
     .split(".")
     .pop()
     .toLowerCase();
-  let exts = text_exts.concat(...video_exts,...image_exts,...pdf_exts);
+  let exts = text_exts.concat(...video_exts, ...image_exts, ...pdf_exts);
   return exts.indexOf(`${ext}`) != -1;
 };
 
-export const encode64 = (str) => {
+export const encode64 = str => {
   return Base64.encodeURI(str);
 };
 
-export const decode64 = (str) => {
+export const decode64 = str => {
   return Base64.decode(str);
 };
 
@@ -96,7 +85,7 @@ export function get_file(option, callback) {
   if (data) {
     return callback(data);
   } else {
-    axios.get(path).then((res) => {
+    axios.get(path).then(res => {
       var data = res.data;
       localStorage.setItem(key, data);
       callback(data);
@@ -105,7 +94,7 @@ export function get_file(option, callback) {
 }
 
 export function get_filex(path, callback) {
-  axios.get(path).then((res) => {
+  axios.get(path).then(res => {
     var data = res.data;
     callback(data);
   });
@@ -152,12 +141,12 @@ export function utc2beijing(utc_datetime) {
 }
 
 export function formatFileSize(bytes) {
-  if (bytes >= 1000000000) {
-    bytes = (bytes / 1000000000).toFixed(2) + " GB";
-  } else if (bytes >= 1000000) {
-    bytes = (bytes / 1000000).toFixed(2) + " MB";
-  } else if (bytes >= 1000) {
-    bytes = (bytes / 1000).toFixed(2) + " KB";
+  if (bytes >= 1024 * 1024 * 1024) {
+    bytes = (bytes / 1024 / 1024 / 1024).toFixed(2) + " GB";
+  } else if (bytes >= 1024 * 1024) {
+    bytes = (bytes / 1048576).toFixed(2) + " MB";
+  } else if (bytes >= 1024) {
+    bytes = (bytes / 1024).toFixed(2) + " KB";
   } else if (bytes > 1) {
     bytes = bytes + " bytes";
   } else if (bytes == 1) {
@@ -203,27 +192,14 @@ export function formatDate(date, fmt) {
     "6": "\u516d",
   };
   if (/(Y+)/.test(fmt)) {
-    fmt = fmt.replace(
-      RegExp.$1,
-      (date.getFullYear() + "").substr(4 - RegExp.$1.length)
-    );
+    fmt = fmt.replace(RegExp.$1, (date.getFullYear() + "").substr(4 - RegExp.$1.length));
   }
   if (/(E+)/.test(fmt)) {
-    fmt = fmt.replace(
-      RegExp.$1,
-      (RegExp.$1.length > 1
-        ? RegExp.$1.length > 2
-          ? "\u661f\u671f"
-          : "\u5468"
-        : "") + week[date.getDay() + ""]
-    );
+    fmt = fmt.replace(RegExp.$1, (RegExp.$1.length > 1 ? (RegExp.$1.length > 2 ? "\u661f\u671f" : "\u5468") : "") + week[date.getDay() + ""]);
   }
   for (var k in o) {
     if (new RegExp("(" + k + ")").test(fmt)) {
-      fmt = fmt.replace(
-        RegExp.$1,
-        RegExp.$1.length === 1 ? o[k] : ("00" + o[k]).substr(("" + o[k]).length)
-      );
+      fmt = fmt.replace(RegExp.$1, RegExp.$1.length === 1 ? o[k] : ("00" + o[k]).substr(("" + o[k]).length));
     }
   }
   return fmt;

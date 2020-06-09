@@ -1,12 +1,13 @@
 // =======Options START=======
 var authConfig = {
-  siteName: "GoIndex-theme-acrou", // 网站名称
+  siteName: "Mello", // 网站名称
   version: "1.1.0", // 程序版本
   theme: "acrou",
   // 强烈推荐使用自己的 client_id 和 client_secret
   client_id: "202264815644.apps.googleusercontent.com",
   client_secret: "X4Z3ca8xfWDb1Voo-F9a7ZxJ",
   refresh_token: "", // 授权 token
+
   /**
    * 设置要显示的多个云端硬盘；按格式添加多个
    * [id]: 可以是 团队盘id、子文件夹id、或者"root"（代表个人盘根目录）；
@@ -82,7 +83,7 @@ var themeOptions = {
      * 是否渲染文件/文件夹描述
      * Render file/folder description or not
      */
-    desc: false
+    desc: false,
   },
 };
 // =======Options END=======
@@ -110,8 +111,7 @@ const FUNCS = {
  * @type {{folder_mime_type: string, default_file_fields: string, gd_root_type: {share_drive: number, user_drive: number, sub_folder: number}}}
  */
 const CONSTS = new (class {
-  default_file_fields =
-    "parents,id,name,mimeType,modifiedTime,createdTime,fileExtension,size";
+  default_file_fields = "parents,id,name,mimeType,modifiedTime,createdTime,fileExtension,size";
   gd_root_type = {
     user_drive: 0,
     share_drive: 1,
@@ -140,9 +140,7 @@ function html(current_drive_order = 0, model = {}) {
       themeOptions: themeOptions,
     })}');
     window.themeOptions = JSON.parse('${JSON.stringify(themeOptions)}');
-    window.gds = JSON.parse('${JSON.stringify(
-      authConfig.roots.map((it) => it.name)
-    )}');
+    window.gds = JSON.parse('${JSON.stringify(authConfig.roots.map(it => it.name))}');
     window.MODEL = JSON.parse('${JSON.stringify(model)}');
     window.current_drive_order = ${current_drive_order};
   </script>
@@ -155,7 +153,7 @@ function html(current_drive_order = 0, model = {}) {
 `;
 }
 
-addEventListener("fetch", (event) => {
+addEventListener("fetch", event => {
   event.respondWith(handleRequest(event.request));
 });
 
@@ -172,7 +170,7 @@ async function handleRequest(request) {
     }
     // 这个操作并行，提高效率
     let tasks = [];
-    gds.forEach((gd) => {
+    gds.forEach(gd => {
       tasks.push(gd.initRootType());
     });
     for (let task of tasks) {
@@ -319,11 +317,7 @@ async function apiRequest(request, gd) {
     let body = await request.text();
     body = JSON.parse(body);
     // 这样可以提升首次列目录时的速度。缺点是，如果password验证失败，也依然会产生列目录的开销
-    let deferred_list_result = gd.list(
-      path,
-      body.page_token,
-      Number(body.page_index)
-    );
+    let deferred_list_result = gd.list(path, body.page_token, Number(body.page_index));
 
     // check .password file, if `enable_password_file_verify` is true
     if (authConfig["enable_password_file_verify"]) {
@@ -352,11 +346,7 @@ async function handleSearch(request, gd) {
   };
   let body = await request.text();
   body = JSON.parse(body);
-  let search_result = await gd.search(
-    body.q || "",
-    body.page_token,
-    Number(body.page_index)
-  );
+  let search_result = await gd.search(body.q || "", body.page_token, Number(body.page_index));
   return new Response(JSON.stringify(search_result), option);
 }
 
@@ -457,9 +447,7 @@ class googleDrive {
       const auth = request.headers.get("Authorization");
       if (auth) {
         try {
-          const [received_user, received_pass] = atob(
-            auth.split(" ").pop()
-          ).split(":");
+          const [received_user, received_pass] = atob(auth.split(" ").pop()).split(":");
           return received_user === user && received_pass === pass ? null : _401;
         } catch (e) {}
       }
@@ -472,8 +460,7 @@ class googleDrive {
     requestOption.headers["Range"] = range;
     let res = await fetch(url, requestOption);
     const { headers } = (res = new Response(res.body, res));
-    this.authConfig.enable_cors_file_down &&
-      headers.append("Access-Control-Allow-Origin", "*");
+    this.authConfig.enable_cors_file_down && headers.append("Access-Control-Allow-Origin", "*");
     inline === true && headers.set("Content-Disposition", "inline");
     return res;
   }
@@ -484,8 +471,7 @@ class googleDrive {
     requestOption.headers["Range"] = range;
     let res = await fetch(url, requestOption);
     const { headers } = (res = new Response(res.body, res));
-    this.authConfig.enable_cors_file_down &&
-      headers.append("Access-Control-Allow-Origin", "*");
+    this.authConfig.enable_cors_file_down && headers.append("Access-Control-Allow-Origin", "*");
     inline === true && headers.set("Content-Disposition", "inline");
     return res;
   }
@@ -508,8 +494,7 @@ class googleDrive {
     let url = "https://www.googleapis.com/drive/v3/files";
     let params = { includeItemsFromAllDrives: true, supportsAllDrives: true };
     params.q = `'${parent}' in parents and name = '${name}' and trashed = false`;
-    params.fields =
-      "files(id, name, mimeType, size ,createdTime, modifiedTime, iconLink, thumbnailLink)";
+    params.fields = "files(id, name, mimeType, size ,createdTime, modifiedTime, iconLink, thumbnailLink)";
     url += "?" + this.enQuery(params);
     let requestOption = await this.requestOption();
     let response = await fetch(url, requestOption);
@@ -525,11 +510,7 @@ class googleDrive {
       this.path_children_cache = {};
     }
 
-    if (
-      this.path_children_cache[path] &&
-      this.path_children_cache[path][page_index] &&
-      this.path_children_cache[path][page_index].data
-    ) {
+    if (this.path_children_cache[path] && this.path_children_cache[path][page_index] && this.path_children_cache[path][page_index].data) {
       let child_obj = this.path_children_cache[path][page_index];
       return {
         nextPageToken: child_obj.nextPageToken || null,
@@ -565,8 +546,7 @@ class googleDrive {
     let params = { includeItemsFromAllDrives: true, supportsAllDrives: true };
     params.q = `'${parent}' in parents and trashed = false AND name !='.password'`;
     params.orderBy = "folder,name,modifiedTime desc";
-    params.fields =
-      "nextPageToken, files(id, name, mimeType, size , modifiedTime, thumbnailLink, description)";
+    params.fields = "nextPageToken, files(id, name, mimeType, size , modifiedTime, thumbnailLink, description)";
     params.pageSize = this.authConfig.files_list_page_size;
 
     if (page_token) {
@@ -660,9 +640,7 @@ class googleDrive {
       return empty_result;
     }
     let words = keyword.split(/\s+/);
-    let name_search_str = `name contains '${words.join(
-      "' AND name contains '"
-    )}'`;
+    let name_search_str = `name contains '${words.join("' AND name contains '")}'`;
 
     // corpora 为 user 是个人盘 ，为 drive 是团队盘。配合 driveId
     let params = {};
@@ -680,8 +658,7 @@ class googleDrive {
       params.pageToken = page_token;
     }
     params.q = `trashed = false AND name !='.password' AND (${name_search_str})`;
-    params.fields =
-      "nextPageToken, files(id, name, mimeType, size , modifiedTime, thumbnailLink, description)";
+    params.fields = "nextPageToken, files(id, name, mimeType, size , modifiedTime, thumbnailLink, description)";
     params.pageSize = this.authConfig.search_result_list_page_size;
     // params.orderBy = 'folder,name,modifiedTime desc';
 
@@ -770,20 +747,19 @@ class googleDrive {
     let cache = [];
     // 把查出来的每一级的path和id都缓存一下
     p_files.forEach((value, idx) => {
-      const is_folder =
-        idx === 0 ? p_files[idx].mimeType === CONSTS.folder_mime_type : true;
+      const is_folder = idx === 0 ? p_files[idx].mimeType === CONSTS.folder_mime_type : true;
       let path =
         "/" +
         p_files
           .slice(idx)
-          .map((it) => it.name)
+          .map(it => it.name)
           .reverse()
           .join("/");
       if (is_folder) path += "/";
       cache.push({ id: p_files[idx].id, path: path });
     });
 
-    cache.forEach((obj) => {
+    cache.forEach(obj => {
       this.id_path_cache[obj.id] = obj.path;
       this.paths[obj.path] = obj.id;
     });
@@ -798,9 +774,7 @@ class googleDrive {
   // 根据id获取file item
   async findItemById(id) {
     const is_user_drive = this.root_type === CONSTS.gd_root_type.user_drive;
-    let url = `https://www.googleapis.com/drive/v3/files/${id}?fields=${
-      CONSTS.default_file_fields
-    }${is_user_drive ? "" : "&supportsAllDrives=true"}`;
+    let url = `https://www.googleapis.com/drive/v3/files/${id}?fields=${CONSTS.default_file_fields}${is_user_drive ? "" : "&supportsAllDrives=true"}`;
     let requestOption = await this.requestOption();
     let res = await fetch(url, requestOption);
     return await res.json();
@@ -853,10 +827,7 @@ class googleDrive {
 
   async accessToken() {
     console.log("accessToken");
-    if (
-      this.authConfig.expires == undefined ||
-      this.authConfig.expires < Date.now()
-    ) {
+    if (this.authConfig.expires == undefined || this.authConfig.expires < Date.now()) {
       const obj = await this.fetchAccessToken();
       if (obj.access_token != undefined) {
         this.authConfig.accessToken = obj.access_token;
@@ -931,10 +902,7 @@ class googleDrive {
 
 String.prototype.trim = function(char) {
   if (char) {
-    return this.replace(
-      new RegExp("^\\" + char + "+|\\" + char + "+$", "g"),
-      ""
-    );
+    return this.replace(new RegExp("^\\" + char + "+|\\" + char + "+$", "g"), "");
   }
   return this.replace(/^\s+|\s+$/g, "");
 };
