@@ -38,9 +38,7 @@
             v-html="file.description"
           ></span>
         </td>
-        <td class="is-hidden-mobile is-hidden-touch">
-          {{ file.modifiedTime }}
-        </td>
+        <td class="is-hidden-mobile is-hidden-touch">{{ file.modifiedTime }}</td>
         <td class="is-hidden-mobile is-hidden-touch">{{ file.size }}</td>
         <td class="is-hidden-mobile is-hidden-touch">
           <span class="icon" @click.stop="copy(file.path)">
@@ -68,6 +66,11 @@
               :title="$t('list.opt.download')"
             ></i>
           </span>
+          <span class="icon" @click.stop="copy(file.path)">
+            <a :href="'iina://weblink?url=' + window.location.origin + file.path">
+              <i class="fa fa-film faa-shake animated-hover" aria-hidden="true"></i>
+            </a>
+          </span>
         </td>
       </tr>
     </tbody>
@@ -78,17 +81,17 @@ export default {
   props: {
     data: {
       type: Array,
-      default: () => [],
+      default: () => []
     },
     icons: {
-      type: Function,
+      type: Function
     },
     go: {
-      type: Function,
+      type: Function
     },
     copy: {
-      type: Function,
-    },
+      type: Function
+    }
   },
   computed: {
     columns() {
@@ -97,23 +100,23 @@ export default {
         {
           name: this.$t("list.title.moditime"),
           style: "width:20%",
-          class: "is-hidden-mobile is-hidden-touch",
+          class: "is-hidden-mobile is-hidden-touch"
         },
         {
           name: this.$t("list.title.size"),
           style: "width:10.5%",
-          class: "is-hidden-mobile is-hidden-touch",
+          class: "is-hidden-mobile is-hidden-touch"
         },
         {
           name: this.$t("list.title.operation"),
           style: "width:13.5%",
-          class: "is-hidden-mobile is-hidden-touch",
-        },
+          class: "is-hidden-mobile is-hidden-touch"
+        }
       ];
     },
     isShowDesc() {
       return window.themeOptions.render.desc || false;
-    },
-  },
+    }
+  }
 };
 </script>
